@@ -1,5 +1,26 @@
 from datetime import date, datetime
 
+class Client:
+    def __init__(self, client_id, name, phone):
+        self.client_id = client_id
+        self.name = name
+        self.phone = phone
+        self.pets = []
+
+    def __del__(self):
+        pass
+
+    def __str__ (self):
+        return f"""
+            ----Клиент----
+        ФИО: {self.name}
+        Телефон: {self.phone}
+            --------------
+        """
+
+    def add_pet(self, patient_object):
+        self.pets.append(patient_object)
+
 class Patient:
     def __init__(self, patient_id, name, species, breed, dob, client_id):
         self.patient_id = patient_id
@@ -40,27 +61,6 @@ class Patient:
     def get_medical_history(self):
         pass
 
-class Client:
-    def __init__(self, client_id, name, phone):
-        self.client_id = client_id
-        self.name = name
-        self.phone = phone
-        self.pets = []
-
-    def __del__(self):
-        pass
-
-    def __str__ (self):
-        return f"""
-            ----Клиент----
-        ФИО: {self.name}
-        Телефон: {self.phone}
-            --------------
-        """
-
-    def add_pet(self, patient_object):
-        self.pets.append(patient_object)
-
 class Doctor:
     def __init__(self, doctor_id, name, speciality):
         self.doctor_id = doctor_id
@@ -92,6 +92,7 @@ class Appointment:
         pass
 
     def __str__ (self):
+        self.check_status()
         if self.status == "Запланирован":
             return f"""
                 ---- Запись ----
@@ -110,7 +111,7 @@ class Appointment:
             """
         else:
             return f"""
-                ---- Медицинская карточка ----
+                ---- Запись о медицинском обслуживании ----
             Дата: {self.date_time}
             Врач: {self.doctor.name}
             Пациент: {self.patient.name}
@@ -129,4 +130,5 @@ class Appointment:
         appt_time = datetime.strptime(self.date_time, '%d/%m/%Y %H:%M')
         if self.status == "Запланирован" and appt_time < now:
             self.status = "Отменен"
+
 
