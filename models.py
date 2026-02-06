@@ -41,14 +41,14 @@ class Patient:
         Кличка: {self.name}
         Вид: {self.species}
         Порода: {self.breed}
-        Дата рождения: {self.dob} (Возраст: {self.get_age()})
+        Дата рождения: {self.pretty_date} (Возраст: {self.get_age()})
         Владелец: {self.client_id}
         ---------------------------
         """
 
     def get_age(self):
         today = date.today()
-        date_obj = datetime.strptime(self.dob, '%d/%m/%Y')
+        date_obj = datetime.strptime(self.dob, '%Y-%m-%d')
         total_months = (today.year - date_obj.year) * 12 + (today.month - date_obj.month)
         if today.day < date_obj.day: total_months -= 1
         years = total_months // 12
@@ -60,6 +60,10 @@ class Patient:
 
     def get_medical_history(self):
         pass
+
+    @property
+    def pretty_date(self):
+        return datetime.strptime(self.dob, '%Y-%m-%d').strftime('%d.%m.%Y')
 
 class Doctor:
     def __init__(self, doctor_id, name, speciality):
@@ -96,7 +100,7 @@ class Appointment:
         if self.status == "Запланирован":
             return f"""
                 ---- Запись ----
-            Дата: {self.date_time}
+            Дата: {self.pretty_date}
             Врач: {self.doctor.name}
             Пациент: {self.patient.name}
                 ----------------
@@ -104,7 +108,7 @@ class Appointment:
         elif self.status == "Отменен":
             return f"""
                 ---- Запись ОТМЕНЕНА (Просрочена) ----
-            Дата: {self.date_time}
+            Дата: {self.pretty_date}
             Врач: {self.doctor.name}
             Пациент: {self.patient.name}
                 --------------------------------------
@@ -112,7 +116,7 @@ class Appointment:
         else:
             return f"""
                 ---- Запись о медицинском обслуживании ----
-            Дата: {self.date_time}
+            Дата: {self.pretty_date}
             Врач: {self.doctor.name}
             Пациент: {self.patient.name}
             Диагноз: {self.diagnosis}
@@ -127,8 +131,13 @@ class Appointment:
 
     def check_status(self):
         now = datetime.now()
-        appt_time = datetime.strptime(self.date_time, '%d/%m/%Y %H:%M')
+        appt_time = datetime.strptime(self.date_time, '%Y-%m-%d %H:%M')
         if self.status == "Запланирован" and appt_time < now:
             self.status = "Отменен"
 
+    @property
+    def pretty_date(self):
+        dt_obj = datetime.strptime(self.date_time, '%Y-%m-%d %H:%M')
+        pretty_date = dt_obj.strftime('%d.%m.%Y в %H:%M')
+        return pretty_date
 
