@@ -130,3 +130,44 @@ def get_doctor_by_id(d_id):
 
 if __name__ == '__main__':
     init_db()
+
+def get_all_patients():
+    connection = sqlite3.connect('clinic.db')
+    cursor = connection.cursor()
+    cursor.execute('''
+                   SELECT p.patient_id, p.name, p.species, p.breed, p.dob, c.name
+                   FROM Patients p
+                            JOIN Clients c ON p.client_id = c.client_id
+                   ''')
+    data = cursor.fetchall()
+    connection.close()
+    return data
+
+def update_patient(p_id, name, species, breed, dob): # обновляет данные пациента
+    connection = sqlite3.connect('clinic.db')
+    cursor = connection.cursor()
+    cursor.execute('''
+                   UPDATE Patients
+                   SET name=?,
+                       species=?,
+                       breed=?,
+                       dob=?
+                   WHERE patient_id = ?
+                   ''', (name, species, breed, dob, p_id))
+    connection.commit()
+    connection.close()
+
+def delete_patient(p_id): # Удаляет пациента
+    connection = sqlite3.connect('clinic.db')
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM Patients WHERE patient_id = ?", (p_id,))
+    connection.commit()
+    connection.close()
+
+def get_all_clients(): # Выпадающий список
+    connection = sqlite3.connect('clinic.db')
+    cursor = connection.cursor()
+    cursor.execute("SELECT client_id, name FROM Clients")
+    data = cursor.fetchall()
+    connection.close()
+    return data
