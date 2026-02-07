@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-header bg-success text-white">
+        Добавить нового питомца
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Кличка</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Вид (Кот, Собака...)</label>
+                    <input type="text" name="species" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Порода</label>
+                    <input type="text" name="breed" class="form-control">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Дата рождения</label>
+                <input type="date" name="dob" class="form-control" required>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="/dashboard/{{ client_id }}" class="btn btn-outline-secondary">Отмена</a>
+                <button type="submit" class="btn btn-success">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

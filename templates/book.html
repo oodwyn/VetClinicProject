@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-header bg-primary text-white">
+        📅 Запись на прием
+    </div>
+    <div class="card-body">
+        <form method="POST">
+
+            <div class="mb-3">
+                <label class="form-label">Кого лечим?</label>
+                <select name="patient_id" class="form-select">
+                    {% for pet in pets %}
+                        <option value="{{ pet[0] }}">{{ pet[1] }} ({{ pet[2] }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Выберите врача:</label>
+                <select name="doctor_id" class="form-select">
+                    {% for doc in doctors %}
+                        <option value="{{ doc[0] }}">{{ doc[1] }} — {{ doc[2] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Желаемая дата и время:</label>
+                <input type="datetime-local" name="date_time" class="form-control" required>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="/dashboard/{{ client_id }}" class="btn btn-outline-secondary">Отмена</a>
+                <button type="submit" class="btn btn-primary">Записаться</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

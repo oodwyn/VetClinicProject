@@ -1,50 +1,25 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Ветеринарная Клиника</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="container mt-4">
-    <h1 class="mb-4">🏥 Ветеринарная Клиника</h1>
+{% extends 'base.html' %}
+{% block left_side %}
+<img src="{{ url_for('static', filename='assets/petleft.jpeg') }}" class="side-img" alt="Pet Left">
+{% endblock %}
 
-    <div class="mb-3">
-        <a href="/add_patient" class="btn btn-success">➕ Новый пациент</a>
-        <a href="/add_dummy_client" class="btn btn-secondary btn-sm">Добавить тестового клиента</a>
+{% block right_side %}
+<img src="{{ url_for('static', filename='assets/petright.jpeg') }}" class="side-img" alt="Pet Right">
+{% endblock %}
+
+{% block content %}
+<div class="text-center mt-5">
+    <h1 class="display-4 mb-3">Добро пожаловать!</h1>
+    <p class="lead text-muted">Система управления ветеринарной клиникой.</p>
+    <hr class="my-4">
+
+    <div class="d-grid gap-3 col-md-6 mx-auto">
+        <a href="/clients" class="btn btn-primary btn-lg p-3">
+            👤 Клиентам (Личный кабинет)
+        </a>
+        <button class="btn btn-outline-secondary btn-lg p-3" disabled>
+            👨‍⚕️ Сотрудникам (В разработке)
+        </button>
     </div>
-
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Кличка</th>
-                <th>Вид</th>
-                <th>Порода</th>
-                <th>Дата рождения</th>
-                <th>Владелец</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for p in patients %}
-            <tr>
-                <td>{{ p[0] }}</td>
-                <td><strong>{{ p[1] }}</strong></td>
-                <td>{{ p[2] }}</td>
-                <td>{{ p[3] }}</td>
-                <td>{{ p[4] }}</td>
-                <td>{{ p[5] }}</td>
-                <td>
-                    <a href="/edit_patient/{{ p[0] }}" class="btn btn-warning btn-sm">Ред.</a>
-                    <a href="/delete_patient/{{ p[0] }}" class="btn btn-danger btn-sm" onclick="return confirm('Удалить карточку?')">Удл.</a>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7" class="text-center">Пациентов пока нет. Добавьте первого!</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+</div>
+{% endblock %}

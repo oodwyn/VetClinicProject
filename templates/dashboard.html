@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+    <h2>👤 Кабинет: {{ client[1] }}</h2>
+    <a href="/" class="btn btn-sm btn-outline-danger">Выход</a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-light h-100">
+            <div class="card-body">
+                <h5 class="card-title">Мои данные</h5>
+                <p class="card-text">Телефон: <strong>{{ client[2] }}</strong></p>
+                <hr>
+                <a href="/book/{{ client[0] }}" class="btn btn-primary w-100">📅 Записаться к врачу</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                <span class="fw-bold">🐾 Мои питомцы</span>
+                <a href="/add_pet/{{ client[0] }}" class="btn btn-sm btn-success">+ Добавить</a>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for pet in pets %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ pet[1] }}</strong> <span class="text-muted">({{ pet[2] }})</span>
+                        </div>
+                        <a href="/delete_pet/{{ pet[0] }}/{{ client[0] }}"
+                           class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Вы уверены, что хотите удалить карточку питомца {{ pet[1] }}?')">
+                           🗑️
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="list-group-item text-muted text-center">Питомцев пока нет. Добавьте первого!</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<h3 class="mt-5">📋 История приемов</h3>
+<div class="table-responsive">
+    <table class="table table-hover mt-3 align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Дата</th>
+                <th>Питомец</th>
+                <th>Врач</th>
+                <th>Статус</th>
+                <th>Диагноз / Назначения</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appt in history %}
+            <tr>
+                <td>{{ appt[0] }}</td>
+                <td><strong>{{ appt[3] }}</strong></td>
+                <td>{{ appt[1] }} <br><small class="text-muted">{{ appt[2] }}</small></td>
+                <td>
+                    {% if appt[4] == 'Запланирован' %}
+                        <span class="badge bg-warning text-dark">{{ appt[4] }}</span>
+                    {% else %}
+                        <span class="badge bg-success">{{ appt[4] }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if appt[5] %}
+                        <strong>{{ appt[5] }}</strong><br>
+                        <span class="text-muted small">{{ appt[6] }}</span>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center py-3">Записей нет. Запишитесь на прием!</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

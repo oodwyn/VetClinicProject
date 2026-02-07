@@ -49,7 +49,44 @@ def init_db():
     ''')
 
     connection.commit()
+
+    # Для заполнения сайта
+    cursor.execute("SELECT count(*) FROM Doctors")
+    if cursor.fetchone()[0] == 0:
+        seed_data(cursor)
+        connection.commit()
+        print("База данных заполнена")
+
     connection.close()
+
+# Тестовые данные для заполнения базы
+def seed_data(cursor):
+    # Врачи
+    cursor.execute("INSERT INTO Doctors (name, speciality) VALUES ('Иванов А.C.', 'Диагност')")
+    id_doc1 = cursor.lastrowid
+    cursor.execute("INSERT INTO Doctors (name, speciality) VALUES ('Миронова В.А.', 'Терапевт')")
+    id_doc2 = cursor.lastrowid
+    cursor.execute("INSERT INTO Doctors (name, speciality) VALUES ('Новиков Г.Д.', 'Хирург')")
+
+    # Клиенты
+    cursor.execute("INSERT INTO Clients (name, phone) VALUES ('Анна Михайлова', '89001112233')")
+    id_cl1 = cursor.lastrowid
+    cursor.execute("INSERT INTO Clients (name, phone) VALUES ('Дмитрий Гордеев', '89009998877')")
+    id_cl2 = cursor.lastrowid
+
+    # Животные
+    cursor.execute(
+        f"INSERT INTO Patients (name, species, breed, dob, client_id) VALUES ('Барсик', 'Кот', 'Сфинкс', '2021-05-20', {id_cl1})")
+    id_pet1 = cursor.lastrowid
+    cursor.execute(
+        f"INSERT INTO Patients (name, species, breed, dob, client_id) VALUES ('Бобик', 'Собака', 'Мастиф', '2022-10-31', {id_cl2})")
+    id_pet2 = cursor.lastrowid
+
+    # Завершенные приемы
+    cursor.execute(f'''INSERT INTO Appointments (patient_id, doctor_id, date_time, status, diagnosis, treatment) 
+                       VALUES ({id_pet1}, {id_doc2}, '2025-12-15 10:00', 'Завершен', 'Перелом', 'Гипс, на снятие записаться через 2 месяца')''')
+    cursor.execute(f'''INSERT INTO Appointments (patient_id, doctor_id, date_time, status, diagnosis, treatment) 
+                       VALUES ({id_pet2}, {id_doc1}, '2025-11-20 14:00', 'Завершен', 'Сыпь на лапе', 'Ношение медицинского воротника')''')
 
 def insert_client(client_obj):
     connection = sqlite3.connect('clinic.db')
@@ -128,9 +165,6 @@ def get_doctor_by_id(d_id):
         return Doctor(data[0], data[1], data[2])
     return None
 
-if __name__ == '__main__':
-    init_db()
-
 def get_all_patients():
     connection = sqlite3.connect('clinic.db')
     cursor = connection.cursor()
@@ -167,7 +201,50 @@ def delete_patient(p_id): # Удаляет пациента
 def get_all_clients(): # Выпадающий список
     connection = sqlite3.connect('clinic.db')
     cursor = connection.cursor()
-    cursor.execute("SELECT client_id, name FROM Clients")
+    cursor.execute("SELECT client_id, name, phone FROM Clients")
     data = cursor.fetchall()
     connection.close()
     return data
+
+def get_client(client_id):
+    connection = sqlite3.connect('clinic.db')
+    cur = connection.cursor()
+    cur.execute("SELECT * FROM Clients WHERE client_id = ?", (client_id,))
+    data = cur.fetchone()
+    connection.close()
+    return data
+
+def get_client_pets(client_id):
+    connection = sqlite3.connect('clinic.db')
+    cur = connection.cursor()
+    cur.execute("SELECT * FROM Patients WHERE client_id = ?", (client_id,))
+    data = cur.fetchall()
+    connection.close()
+    return data
+
+def get_all_doctors():
+    connection = sqlite3.connect('clinic.db')
+    cur = connection.cursor()
+    cur.execute("SELECT * FROM Doctors")
+    data = cur.fetchall()
+    connection.close()
+    return data
+
+# Функция для получения истории приемов конкретного клиента (для всех пациентов-животных)
+def get_client_appointments(client_id):
+    conn = sqlite3.connect('clinic.db')
+    cur = conn.cursor()
+    cur.execute('''
+        SELECT a.date_time, d.name, d.speciality, p.name, a.status, a.diagnosis, a.treatment
+        FROM Appointments a
+        JOIN Doctors d ON a.doctor_id = d.doctor_id
+        JOIN Patients p ON a.patient_id = p.patient_id
+        WHERE p.client_id = ?
+        ORDER BY a.date_time DESC
+    ''', (client_id,))
+    data = cur.fetchall()
+    conn.close()
+    return data
+
+if __name__ == '__main__':
+    init_db()
